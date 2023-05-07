@@ -107,5 +107,9 @@ button {
 }
 .resumeBodyContent {
     text-align: justify;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+}
+.resumeBodyContent-mini{
+    text-align: justify;
+    margin: 20px 0px;
 }

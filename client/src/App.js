@@ -3,7 +3,7 @@ import { BrowserRouter,Routes,Route } from 'react-router-dom';
 import Home from './components/Home';
 import Resume from './components/Resume';
 import './App.css';
-
+import CHAT from './components/chat';
 function App() {
   // state holding the result 初始化
   const [result,setResult]=useState({})
@@ -11,9 +11,10 @@ function App() {
     <div> 
       <BrowserRouter>
         <Routes>
-            <Route path='/' element={<Home setResult={setResult}/>}></Route>
+            <Route path='/' element={<CHAT/>}></Route>
+            <Route path='/home' element={<Home setResult={setResult}/>}></Route>
             <Route path='/resume' element={<Resume result={result}/>}></Route>
-        </Routes>
+        </Routes>  
       </BrowserRouter>
     </div>
   );

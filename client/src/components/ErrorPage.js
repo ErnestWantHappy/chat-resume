@@ -4,7 +4,7 @@ const ErrorPage = () => {
     <div className="app">
       <h3>
         You've not provided your details. Kindly head back to the{" "}
-        <Link to="/">homepage</Link>{" "}
+        <Link to="/home">homepage</Link>{" "}
       </h3>
     </div>
   );

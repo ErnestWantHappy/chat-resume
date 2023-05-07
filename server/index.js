@@ -5,7 +5,7 @@ const path = require("path");//用来处理路径的模块
 const { Configuration, OpenAIApi } = require("openai");
 
 const configuration = new Configuration({
-  apiKey: "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",
+  apiKey: "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",
 });
 
 const openai = new OpenAIApi(configuration);
@@ -14,7 +14,7 @@ const GPTFunction = async (text) => {
   const response = await openai.createCompletion({
     model: "text-davinci-003",
     prompt: text,
-    max_tokens: 1000,//最多返回数
+    max_tokens: 2048,//最多返回数
     top_p: 1,//随机情况
     frequency_penalty: 1,//减少模型重复
     presence_penalty: 1,//模型讨论新主题的可能性
