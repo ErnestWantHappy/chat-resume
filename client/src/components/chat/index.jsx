@@ -12,7 +12,6 @@ const CHAT = () => {
   const [answer, setAnswer] = useState(""); //答案
   // const [loading, setLoading] = useState(false);//页面加载业务，setLoading(true)是加载中，初始化false不加载
   const handleSubmit = (e) => {
-    console.log("222")
     e.preventDefault();
     const formData = new FormData();
     formData.append("question", question);
@@ -22,19 +21,18 @@ const CHAT = () => {
     }
 
     axios.post("http://43.153.124.222:80/resume/chat",formData,{}).then((res)=>{
-      console.log("1111")
         if(res.data.message){
-            console.log("xs")
+            console.log(res.data)
             // updates the result object
             setAnswer(res.data.data)
+            console.log(answer)
             console.log('res.data.message',res.data.message);
-            navigate("/")
         }
     }).catch((err)=>console.error(err))
     // setLoading(true);
   };
   const tiaozhuan=()=>{
-    console.log("111")
+    navigate("/home")
   }
   //     window.document.getElementById("rec_msg").textContent = result;
   return (

@@ -3,9 +3,9 @@ const cors = require("cors");//引入cors板块解决跨域
 const multer = require("multer");//用于处理表单数据，主要用于上传文件
 const path = require("path");//用来处理路径的模块
 const { Configuration, OpenAIApi } = require("openai");
-
+let messageArr=[];
 const configuration = new Configuration({
-  apiKey: "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",
+  apiKey: "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",
 });
 
 const openai = new OpenAIApi(configuration);
@@ -20,6 +20,15 @@ const GPTFunction = async (text) => {
     presence_penalty: 1,//模型讨论新主题的可能性
   });
   return response.data.choices[0].text;
+};
+
+const GPTFunction2 = async (textArr) => {
+  const completion = await openai.createChatCompletion({
+  model: "gpt-3.5-turbo",
+  messages: textArr,
+});
+    const result=completion.data.choices[0].message.content
+    return result;
 };
 
 let database=[]
@@ -53,15 +62,29 @@ app.get("/", function (req, res) {
   });
 });
 
-app.post("/resume/chat", async (req, res) => {
-  // const {
-  //   question,//问题
-  // } = req.body;
+app.post("/resume/chat", upload.single("headshotImage"), async (req, res) => {
+   
+   const {
+     question,//问题
+   } = req.body;
+//   console.log(question);
+    messageArr.push({"role": "user", "content":question})
+    const answer=await GPTFunction2(messageArr);
+    // answer = answer.replace("\n","");
+    messageArr.push({"role": "assistant", "content":answer})
+    console.log(answer)
+   
+  // 将值分配到一个对象里
+  const newEntry = {
+    question,
+    answer
+  };
   
-  console.log("reqbody"+req.body)
-  
+  const data={...newEntry};
+  console.log(data)
   res.json({
-    message: "Request successful!"
+    message: "Request successful!",
+    data
   });
 });
 
