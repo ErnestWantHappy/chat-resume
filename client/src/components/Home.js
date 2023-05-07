@@ -2,30 +2,30 @@ import { useState } from "react";
 import axios from 'axios'
 import {useNavigate} from 'react-router-dom'
 import Loading from "./Loading";
-
+ 
 const Home = ({setResult}) => {
-  const [fullName, setFullName] = useState("");
-  const [currentPosition,setCurrentPosition]=useState("");
-  const [currentLength,setCurrentLength]=useState(1);
-  const [currentTechnologies,setCurrentTechnologies]=useState("");
-  const [headshot,setHeadshot]=useState(null);
-  const [companyInfo, setCompanyInfo] = useState([{ name: "", position: "" }]);
-  const [loading, setLoading] = useState(false);
-  const navigate=useNavigate()
+  const [fullName, setFullName] = useState("");//全名
+  const [currentPosition,setCurrentPosition]=useState("");//现在的职位
+  const [currentLength,setCurrentLength]=useState(1);//实习了几年
+  const [currentTechnologies,setCurrentTechnologies]=useState("");//拥有的技术
+  const [headshot,setHeadshot]=useState(null);//头像
+  const [companyInfo, setCompanyInfo] = useState([{ name: "", position: "" }]);//公司信息
+  const [loading, setLoading] = useState(false);//页面加载业务，setLoading(true)是加载中，初始化false不加载
+  const navigate=useNavigate()//使用useNavigate 进行路由的跳转以及传参，并且获取参数。
 
-   // updates the state with user's input
+   // 在公司列表中添加一个空的元素供用户输入
    const handleAddCompany = () => {
     setCompanyInfo([...companyInfo, { name: "", position: "" }]);
   };
 
-  // removes a selected item from the list
+  // 移除公司列表中的某一个公司
   const handleRemoveCompany = (index) => {
     const list = [...companyInfo];
-    list.splice(index, 1);
+    list.splice(index, 1);//从index位置删除一个元素
     setCompanyInfo(list);
   };
 
-  // updates an item within the list
+  // 用户输入公司信息
   const handleUpdateCompany = (e, index) => {
     const { name, value } = e.target;
     const list = [...companyInfo];
@@ -33,6 +33,7 @@ const Home = ({setResult}) => {
     setCompanyInfo(list);
   };
 
+  //提交表单
   const handleFormSubmit = (e) => {
     e.preventDefault();
 
@@ -42,9 +43,9 @@ const Home = ({setResult}) => {
     formData.append("currentPosition",currentPosition);
     formData.append("currentLength",currentLength);
     formData.append("currentTechnologies",currentTechnologies);
-    formData.append("workHistory",JSON.stringify(companyInfo))
+    formData.append("workHistory",JSON.stringify(companyInfo));//JSON.stringify()【从一个对象中解析出字符串】
     console.log('formData',formData)
-    axios.post("http://43.153.124.222:4001/resume/create",formData,{}).then((res)=>{
+    axios.post("http://43.153.124.222:80/resume/create",formData,{}).then((res)=>{
         if(res.data.message){
             // updates the result object
             setResult(res.data.data)
@@ -60,14 +61,16 @@ const Home = ({setResult}) => {
 
   return (
     <div className="app">
-      <h1>Resume Builder</h1>
-      <p>Generate a resume with ChatGPT in few seconds</p>
+      <h1>简历生成器</h1>
+      <p>使用ChatGPT几秒钟生成一个简历</p>
+      {/* encType="multipart/form-data"指编码类型由多部分构成 */}
       <form
         method="POST"
         encType="multipart/form-data"
         onSubmit={handleFormSubmit}
       >
-        <label htmlFor="fullName">Enter your full name</label>
+        {/* React DOM 使用 className 和 htmlFor 来做对应的属性，就是点击这个标签就哭呀定位到input标签直接输入 */}
+        <label htmlFor="fullName">输入你的全名</label>
         <input
           type="text"
           required
@@ -78,25 +81,25 @@ const Home = ({setResult}) => {
         />
         <div className="nestedContainer">
             <div>
-                <label htmlFor="currentPosition">Current Position</label>
+                <label htmlFor="currentPosition">现在的职位</label>
                 <input type="text" required name="currentPosition" id="currentPosition" value={currentPosition} onChange={(e)=>setCurrentPosition(e.target.value)} />
             </div>
             <div>
-                <label htmlFor="currentLength">For how long? (year)</label>
+                <label htmlFor="currentLength">工作了多久 (年)</label>
                 <input type="number" required className="currentInput" value={currentLength} onChange={(e)=>setCurrentLength(e.target.value)} />
             </div>
             <div>
-                <label htmlFor="currentTechnologies">Technologies</label>
+                <label htmlFor="currentTechnologies">使用的技术</label>
                 <input type="text" required name="currentTechnologies" id="currentTechnologies" className="currentInput" value={currentTechnologies} onChange={(e)=>setCurrentTechnologies(e.target.value)} />
             </div>
         </div>
-        <label htmlFor='photo'>Upload your headshot image</label>
+        <label htmlFor='photo'>请上传你的大头照 (png,jpeg)</label>
         <input type="file" name="photo" id="photo" required accept="image/x-png,image/jpeg" onChange={(e)=>setHeadshot(e.target.files[0])} />
-        <h3>Companies you've worked at</h3>   
+        <h3>你曾经工作过的公司</h3>   
         {companyInfo.map((company, index) => (
           <div className="nestedContainer" key={index}>
             <div className="companies">
-              <label htmlFor="name">Company Name</label>
+              <label htmlFor="name">公司名称</label>
               <input
                 type="text"
                 name="name"
@@ -105,7 +108,7 @@ const Home = ({setResult}) => {
               />
             </div>
             <div className="companies">
-                <label htmlFor="position">Position Held</label>
+                <label htmlFor="position">公司职位</label>
                 <input type="text" name="position" required onChange={(e)=>handleUpdateCompany(e,index)} />
             </div>
             <div className="btn_group">
@@ -114,7 +117,7 @@ const Home = ({setResult}) => {
             </div>
           </div>
         ))}
-        <button>CREATE RESUME</button>
+        <button>创建简历</button>
       </form>
     </div>
   );

@@ -1,7 +1,7 @@
-const express = require("express");
-const cors = require("cors");
-const multer = require("multer");
-const path = require("path");
+const express = require("express");//引入express板块
+const cors = require("cors");//引入cors板块解决跨域
+const multer = require("multer");//用于处理表单数据，主要用于上传文件
+const path = require("path");//用来处理路径的模块
 const { Configuration, OpenAIApi } = require("openai");
 
 const configuration = new Configuration({
@@ -14,11 +14,10 @@ const GPTFunction = async (text) => {
   const response = await openai.createCompletion({
     model: "text-davinci-003",
     prompt: text,
-    temperature: 0.6,
-    max_tokens: 250,
-    top_p: 1,
-    frequency_penalty: 1,
-    presence_penalty: 1,
+    max_tokens: 1000,//最多返回数
+    top_p: 1,//随机情况
+    frequency_penalty: 1,//减少模型重复
+    presence_penalty: 1,//模型讨论新主题的可能性
   });
   return response.data.choices[0].text;
 };
@@ -26,12 +25,12 @@ const GPTFunction = async (text) => {
 let database=[]
 let id=1
 
-const PORT = 4001;
-const app = new express();
+const PORT = 80;
+const app = new express();//创建实例
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cors());
+app.use(express.urlencoded({ extended: true })); //加载解析urlencoded请求体的中间件。
+app.use(express.json());//加载解析json的中间件
+app.use(cors());//cors板块解决跨域
 app.use("/uploads", express.static("uploads"));
 // app.use(express.static(__dirname+"/build"));
 const storage = multer.diskStorage({
@@ -56,15 +55,15 @@ app.get("/", function (req, res) {
 
 app.post("/resume/create", upload.single("headshotImage"), async (req, res) => {
   const {
-    fullName,
-    currentPosition,
-    currentLength,
-    currentTechnologies,
-    workHistory,
+    fullName,//名字
+    currentPosition,//职位
+    currentLength,//时间
+    currentTechnologies,//技术
+    workHistory,//公司信息
   } = req.body;
-  const workArray = JSON.parse(workHistory); // an array
+  const workArray = JSON.parse(workHistory); // 将字符串信息变成数组信息
 
-  // loops through the items in the workArray and converts them to a string
+  // 循环遍历 workArray 中的项并将它们转换为字符串
   const remainderText = () => {
     let stringText = "";
     for (let i = 0; i < workArray.length; i++) {
@@ -73,26 +72,26 @@ app.post("/resume/create", upload.single("headshotImage"), async (req, res) => {
     return stringText;
   };
 
-  // the job scription prompt
-  const prompt1=`I am writing a resume, my details are \n name: ${fullName} \n role: ${currentPosition} (${currentLength} years). \n I write in the technologies: ${currentTechnologies}. Can you write a 100 words description for the top of the resume(first person writing)?`;
-  // the job responsibilities prompt
-  const prompt2=`I am writing a resume, my details are \n name: ${fullName} \n role: ${currentPosition} (${currentLength} years). \n I write in the technologies: ${currentTechnologies}. Can you write 10 points for a resume on what I am good at?`;
-  // the job achievements prompt
-  const prompt3=`I am writing a resume, my details are \n name: ${fullName} \n role: ${currentPosition} (${currentLength} years). \n During my years I worked at ${workArray.length} companies. ${remainderText()} \n Can you write me 50 words for each company separated in numbers of my succession in the company (in first person)?`;
+  // 工作信息描述
+  const prompt1=`我正在写一份简历, 我的信息有 \n 名字: ${fullName} \n 职位: ${currentPosition} (${currentLength} 年). \n 我具有这些技术: ${currentTechnologies}. 可以用第一人称在简历的最上面帮我写100字的描述吗?`;
+  // 关于擅长什么技能
+  const prompt2=`我正在写一份简历, 我的信息有 \n 名字: ${fullName} \n 职位: ${currentPosition} (${currentLength} 年). \n 我具有这些技术: ${currentTechnologies}. 你可以为我的简历写10点关于我擅长什么吗?`;
+  // 关于在各个公司的成就
+  const prompt3=`我正在写一份简历, 我的信息有 \n 名字: ${fullName} \n 职位: ${currentPosition} (${currentLength} 年). \n 我曾经在这 ${workArray.length} 个公司工作. ${remainderText()} \n 你可以用第一人称为我在这几个公司的贡献分别写50个字吗?`;
 
-  // generate a GPT-3 result
+  // 得到GPT3的结果
   const objective=await GPTFunction(prompt1);
   const keypoints=await GPTFunction(prompt2);
   const jobResponsibilities = await GPTFunction(prompt3);
-  // put theme into an object
+  // 放到对象里
   const chatgptData={objective,keypoints,jobResponsibilities};
   console.log('result',chatgptData)
 
-  // group the values int an object
+  // 将值分配到一个对象里
   const newEntry = {
     id: id++,
     fullName,
-    image_url: `http://43.153.124.222:4001/uploads/${req.file.filename}`,
+    image_url: `http://43.153.124.222:80/uploads/${req.file.filename}`,
     currentPosition,
     currentLength,
     currentTechnologies,
