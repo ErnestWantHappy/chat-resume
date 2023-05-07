@@ -32,7 +32,7 @@ app.use(express.urlencoded({ extended: true })); //加载解析urlencoded请求�
 app.use(express.json());//加载解析json的中间件
 app.use(cors());//cors板块解决跨域
 app.use("/uploads", express.static("uploads"));
-// app.use(express.static(__dirname+"/build"));
+app.use(express.static(__dirname+"/build"));
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads");
@@ -50,6 +50,18 @@ const upload = multer({
 app.get("/", function (req, res) {
   res.json({
     message: "Hello World",
+  });
+});
+
+app.post("/resume/chat", async (req, res) => {
+  // const {
+  //   question,//问题
+  // } = req.body;
+  
+  console.log("reqbody"+req.body)
+  
+  res.json({
+    message: "Request successful!"
   });
 });
 

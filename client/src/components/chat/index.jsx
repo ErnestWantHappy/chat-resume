@@ -12,6 +12,7 @@ const CHAT = () => {
   const [answer, setAnswer] = useState(""); //答案
   // const [loading, setLoading] = useState(false);//页面加载业务，setLoading(true)是加载中，初始化false不加载
   const handleSubmit = (e) => {
+    console.log("222")
     e.preventDefault();
     const formData = new FormData();
     formData.append("question", question);
@@ -20,7 +21,8 @@ const CHAT = () => {
       console.log(key[0] + ", " + key[1]);
     }
 
-    axios.post("http://43.153.124.222:80/resume/create",formData,{}).then((res)=>{
+    axios.post("http://43.153.124.222:80/resume/chat",formData,{}).then((res)=>{
+      console.log("1111")
         if(res.data.message){
             console.log("xs")
             // updates the result object
@@ -31,6 +33,9 @@ const CHAT = () => {
     }).catch((err)=>console.error(err))
     // setLoading(true);
   };
+  const tiaozhuan=()=>{
+    console.log("111")
+  }
   //     window.document.getElementById("rec_msg").textContent = result;
   return (
     <div>
@@ -40,6 +45,8 @@ const CHAT = () => {
         </div>
         <Input onChange={(e) => setQuestion(e.target.value)} />
         <button>Submit</button>
+        <br></br>
+        <div onClick={tiaozhuan}>跳转</div>
       </form>
     </div>
   );
