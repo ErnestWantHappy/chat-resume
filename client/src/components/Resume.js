@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import ErrorPage from "./ErrorPage";
-
+import '../index.css'
 const Resume = ({ result }) => {
   const componentRef = useRef();// useRef()可以用来绑定元素节点和保存变量
   // function the replace the new line with a break tag
@@ -13,10 +13,8 @@ const Resume = ({ result }) => {
     return <ErrorPage />;
   }
 
-  const handlePrint = () => alert("Print Successful!");
   return (
     <>
-      <button onClick={handlePrint}>打印页面</button>
       <main className="container" ref={componentRef}>
         <header className="header">
           <div>

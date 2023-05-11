@@ -1,12 +1,25 @@
 const express = require("express");//引入express板块
+
 const cors = require("cors");//引入cors板块解决跨域
 const multer = require("multer");//用于处理表单数据，主要用于上传文件
 const path = require("path");//用来处理路径的模块
 const { Configuration, OpenAIApi } = require("openai");
 let messageArr=[];
 const configuration = new Configuration({
-  apiKey: "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",
+  apiKey: "api_key",
 });
+
+const mysql = require("mysql"); //引入mysql 模块
+// 创建数据库连接 填入数据库信息
+const conn = mysql.createConnection({
+  user: "chathub", //用户名
+  password: "1234", //密码
+  host: "43.143.111.217", //主机（默认都是local host）
+  database: "chathub", //数据库名
+});
+module.exports=conn;
+
+
 
 const openai = new OpenAIApi(configuration);
 
@@ -34,7 +47,7 @@ const GPTFunction2 = async (textArr) => {
 let database=[]
 let id=1
 
-const PORT = 80;
+const PORT = 4000;
 const app = new express();//创建实例
 
 app.use(express.urlencoded({ extended: true })); //加载解析urlencoded请求体的中间件。
@@ -57,9 +70,34 @@ const upload = multer({
 });
 
 app.get("/", function (req, res) {
+    
   res.json({
     message: "Hello World",
   });
+});
+//查询访问密码数据库里有没有
+app.post("/affirm", upload.single("headshotImage"), async (req, res) => {
+   
+   const {
+     secret,//问题
+   } = req.body;
+    let flag="false"
+    const sqlStr='select * from message where replyMsg=?'
+     conn.query(sqlStr,secret,(err,result)=>{
+            if(err)return console.log(err);
+            if(result[0]){
+                res.json({
+                message: "Request successful!",
+                flag:"true"
+                });
+            }else{
+                res.json({
+                message: "Request successful!",
+                flag:"false"
+                });
+            }
+      })
+  
 });
 
 app.post("/resume/chat", upload.single("headshotImage"), async (req, res) => {
@@ -74,17 +112,11 @@ app.post("/resume/chat", upload.single("headshotImage"), async (req, res) => {
     messageArr.push({"role": "assistant", "content":answer})
     console.log(answer)
    
-  // 将值分配到一个对象里
-  const newEntry = {
-    question,
-    answer
-  };
   
-  const data={...newEntry};
-  console.log(data)
+//   console.log(data)
   res.json({
     message: "Request successful!",
-    data
+    answer
   });
 });
 
@@ -126,7 +158,7 @@ app.post("/resume/create", upload.single("headshotImage"), async (req, res) => {
   const newEntry = {
     id: id++,
     fullName,
-    image_url: `http://43.153.124.222:80/uploads/${req.file.filename}`,
+    image_url: `http://43.153.124.222:4000/uploads/${req.file.filename}`,
     currentPosition,
     currentLength,
     currentTechnologies,

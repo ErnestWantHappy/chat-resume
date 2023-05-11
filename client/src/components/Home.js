@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from 'axios'
 import {useNavigate} from 'react-router-dom'
 import Loading from "./Loading";
- 
+import '../index.css'
 const Home = ({setResult}) => {
   const [fullName, setFullName] = useState("");//全名
   const [currentPosition,setCurrentPosition]=useState("");//现在的职位
@@ -45,7 +45,7 @@ const Home = ({setResult}) => {
     formData.append("currentTechnologies",currentTechnologies);
     formData.append("workHistory",JSON.stringify(companyInfo));//JSON.stringify()【从一个对象中解析出字符串】
     console.log('formData',formData)
-    axios.post("http://43.153.124.222:80/resume/create",formData,{}).then((res)=>{
+    axios.post("http://43.153.124.222:4000/resume/create",formData,{}).then((res)=>{
         if(res.data.message){
             // updates the result object
             setResult(res.data.data)
@@ -80,7 +80,7 @@ const Home = ({setResult}) => {
           onChange={(e) => setFullName(e.target.value)}
         />
         <div className="nestedContainer">
-            <div>
+            <div className="div1">
                 <label htmlFor="currentPosition">现在的职位</label>
                 <input type="text" required name="currentPosition" id="currentPosition" value={currentPosition} onChange={(e)=>setCurrentPosition(e.target.value)} />
             </div>
